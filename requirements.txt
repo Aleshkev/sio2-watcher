@@ -1,3 +1,4 @@
-APScheduler>=3.5.3
-beautifulsoup4>=4.7.1
-requests>=2.19.1
+matplotlib
+APScheduler
+beautifulsoup4
+requests
