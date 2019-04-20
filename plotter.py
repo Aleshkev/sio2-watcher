@@ -5,21 +5,41 @@ import csv
 import matplotlib
 import matplotlib.pyplot as plt
 
-PAST = True
-TRACK = False
-ANNOTATE = False
-VECTOR = False
+PAST = True  # Draw not-newest results with grey lines.
+TRACK = True  # Draw dotted colored lines between tracked people's scores.
+ANNOTATE = True  # Annotate tracked people's scores.
+VECTOR = True  # Save as vector (PNG if False).
 
 if VECTOR:
     matplotlib.use('svg')
 
 fig, ax = plt.subplots()
 
+
+assigned = []
+
+
+def find_position(x, y):
+    # An ugly bodge to assign positions for labels.
+    x += 8
+    y += 40
+    changed = True
+    while changed:
+        changed = False
+        for u, v in assigned:
+            if abs(u - x) > 5 or abs(y - v) > 400:
+                continue
+            y += 50
+            changed = True
+    assigned.append((x, y))
+    return x, y
+
+
 with pathlib.Path('data.csv').open(encoding='utf-8') as file:
     reader = csv.DictReader(file)
     rows = tuple(reader)
 
-    tracked = ('Jonasz A.', 'Mikołaj B.', 'Janek S.')
+    tracked = ('Jonasz A.', 'Mikołaj B.', 'Kuba B.', 'Antek D.')
     tracked_xs = collections.defaultdict(list)
     tracked_ys = collections.defaultdict(list)
 
@@ -39,8 +59,8 @@ with pathlib.Path('data.csv').open(encoding='utf-8') as file:
             tracked_ys[person].append(r)
 
             if last and ANNOTATE:
-                ax.annotate(f"{person}", xy=(1 + v.index(r), r), xycoords='data', ha='center', xytext=(20, 20),
-                            textcoords='offset points',
+                xy = (1 + v.index(r), r)
+                ax.annotate(f"{person}", xy=xy, xycoords='data', ha='center', xytext=find_position(*xy),
                             arrowprops=dict(arrowstyle="->", connectionstyle="arc3,rad=0.2", shrinkB=3))
 
     if TRACK:
