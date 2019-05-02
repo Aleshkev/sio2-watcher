@@ -9,6 +9,7 @@ PAST = True  # Draw not-newest results with grey lines.
 TRACK = True  # Draw dotted colored lines between tracked people's scores.
 ANNOTATE = True  # Annotate tracked people's scores.
 VECTOR = True  # Save as vector (PNG if False).
+# VECTOR = False
 
 if VECTOR:
     matplotlib.use('svg')
@@ -53,7 +54,7 @@ with pathlib.Path('data.csv').open(encoding='utf-8') as file:
         if last:
             ax.plot(range(1, len(v) + 1), v, '.-')
 
-        for person in tracked:
+        for person in sorted(tracked, key=lambda person: v.index(int(row[person])), reverse=True):
             r = int(row[person])
             tracked_xs[person].append(1 + v.index(r))
             tracked_ys[person].append(r)
